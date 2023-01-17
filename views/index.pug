@@ -2,4 +2,15 @@ extends layout
 
 block content
   h1= title
-  p Welcome to #{title}
+  p Welcome to #[em Supplies Store], a very basic Express website developed as an assignment project for The Odin Project curriculum.
+
+  h2 Dynamic Store Status
+
+  if error
+    p Error getting the store data.
+  else
+    p Store has the following record counts:
+
+    ul
+      li #[strong Items:] !{data.item_count}
+      li #[strong Categories:] !{data.category_count}

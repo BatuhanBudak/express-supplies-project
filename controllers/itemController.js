@@ -1,12 +1,45 @@
 const Item = require("../models/item");
+const Category = require("../models/category");
+const async = require("async");
 
 exports.index = (req, res) => {
-  res.send("NOT IMPLEMENTED: SİTE HOME PAGE");
+  async.parallel(
+    {
+      item_count(callback) {
+        //Pass and empty object as match condition to find all documents of this collection
+        Item.countDocuments({}, callback);
+      },
+      category_count(callback) {
+        Category.countDocuments({}, callback);
+      },
+    },
+    (err, results) => {
+      if (err) {
+        return next(err);
+      }
+      res.render("index", {
+        title: "Supplies Store Home",
+        error: err,
+        data: results,
+      });
+    }
+  );
 };
 
 // Display list of all Authors.
-exports.item_list = (req, res) => {
-  res.send("NOT IMPLEMENTED: Author list");
+exports.item_list = (req, res, next) => {
+  Item.find({}, "name description")
+    .sort({ name: 1 })
+    .populate("category")
+    .exec(function (err, list_item) {
+      if (err) {
+        return next(err);
+      }
+      res.render("item_list", {
+        title: "List of all Items",
+        item_list: list_item,
+      });
+    });
 };
 
 // Display detail page for a specific Author.
